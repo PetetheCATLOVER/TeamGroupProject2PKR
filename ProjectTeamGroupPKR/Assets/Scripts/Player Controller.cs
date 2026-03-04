@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public AudioClip jumpSound;
     public AudioClip hitSound;
 
+    private SpriteRenderer spriteRenderer;
     private int hitCount = 0;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -41,7 +42,15 @@ public class PlayerController : MonoBehaviour
         HandleJump();
         HandleCrouch();
     }
-    
+
+    // Use this for initialization
+    void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
+    }
+
+
 
     //Prison free movement (3D)
     void FreeMovement3D()
