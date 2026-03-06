@@ -10,9 +10,9 @@ public class OfficerController : MonoBehaviour
     {
         if (!chaseStarted) return;
 
-        transform.position = Vector3.MoveTowards(
+        transform.position = Vector2.MoveTowards(
             transform.position,
-            new Vector3(player.position.x, transform.position.y, player.position.z),
+            new Vector2(player.position.x, transform.position.y),
             chaseSpeed * Time.deltaTime
         );
 
