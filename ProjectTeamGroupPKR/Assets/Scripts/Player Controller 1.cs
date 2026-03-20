@@ -1,46 +1,107 @@
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController1 : MonoBehaviour
+public class PlayerPlatformerController1 : PhysicsObject
 {
-    public float jumpForce = 8f;
+    public float maxSpeed = 7;
+    public float jumpTakeOffSpeed = 7;
+
+    [Header("Chase Settings")]
+    public bool inChaseMode = false;
     public int maxJumps = 2;
 
     private int jumpCount = 0;
-    private Rigidbody2D rb;
 
-    public Animator animator;
-    public AudioSource audioSource;
-    public AudioClip jumpSound;
+    private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
-    void Start()
+    void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
-    void Update()
+    protected override void ComputeVelocity()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && jumpCount < maxJumps)
+        Vector2 move = Vector2.zero;
+
+        // 🔹 NORMAL MOVEMENT (INSIDE CELL)
+        if (!inChaseMode)
         {
-            Jump();
+            move.x = Input.GetAxis("Horizontal");
+
+            // SINGLE JUMP ONLY
+            if (Input.GetButtonDown("Jump") && grounded)
+            {
+                StartCoroutine(Jump());
+            }
         }
-    }
+        else
+        {
+            // 🔹 CHASE MODE (NO LEFT/RIGHT MOVEMENT)
+            move.x = 0;
 
-    void Jump()
-    {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            // DOUBLE JUMP ENABLED
+            if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
+            {
+                velocity.y = jumpTakeOffSpeed;
+                jumpCount++;
 
-        jumpCount++;
+                animator.SetTrigger("Jump");
+            }
 
-        animator.SetTrigger("Jump");
+            // Always running animation
+            animator.SetBool("isRunning", true);
+        }
 
-        audioSource.PlayOneShot(jumpSound);
-    }
+        // SHORT JUMP CUT (same as before)
+        if (Input.GetButtonUp("Jump"))
+        {
+            if (velocity.y > 0)
+            {
+                velocity.y *= 0.5f;
+            }
+        }
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
+        // RESET JUMPS WHEN GROUNDED
+        if (grounded)
         {
             jumpCount = 0;
         }
+
+        // 🔹 SPRITE DIRECTION (ONLY IN NORMAL MODE)
+        if (!inChaseMode)
+        {
+            if (move.x > 0.01f)
+            {
+                spriteRenderer.flipX = false;
+            }
+            else if (move.x < -0.01f)
+            {
+                spriteRenderer.flipX = true;
+            }
+        }
+
+        // 🔹 ANIMATIONS
+        animator.SetBool("grounded", grounded);
+        animator.SetFloat("velocityX", Mathf.Abs(velocity.x) / maxSpeed);
+        animator.SetFloat("velocityY", velocity.y / maxSpeed);
+
+        // 🔹 APPLY MOVEMENT
+        targetVelocity = move * maxSpeed;
+    }
+
+    IEnumerator Jump()
+    {
+        yield return new WaitForSeconds(0.1f);
+        velocity.y = jumpTakeOffSpeed;
+    }
+
+    // 🔥 CALL THIS WHEN PLAYER ESCAPES TUNNEL
+    public void StartChaseMode()
+    {
+        inChaseMode = true;
     }
 }
+
