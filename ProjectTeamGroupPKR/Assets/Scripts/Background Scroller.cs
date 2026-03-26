@@ -7,6 +7,6 @@ public class BackgroundScroller : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector2.left * scrollSpeed * Time.deltaTime);
+        transform.Translate(Vector2.right * scrollSpeed * Time.deltaTime);
     }
 }
