@@ -42,17 +42,20 @@ public class PlayerPlatformerController1 : PhysicsObject
             // 🔹 CHASE MODE (NO LEFT/RIGHT MOVEMENT)
             move.x = 0;
 
+            // FORCE RUN ANIMATION
+            animator.SetFloat("velocityX", 1f);
+
             // DOUBLE JUMP ENABLED
             if (Input.GetButtonDown("Jump") && jumpCount < maxJumps)
             {
                 velocity.y = jumpTakeOffSpeed;
                 jumpCount++;
 
-                animator.SetTrigger("Jump");
+                animator.SetFloat("velocityY", velocity.y);
             }
 
             // Always running animation
-            animator.SetBool("isRunning", true);
+            animator.SetFloat("velocityX", 1f);
         }
 
         // SHORT JUMP CUT (same as before)
@@ -85,8 +88,16 @@ public class PlayerPlatformerController1 : PhysicsObject
 
         // 🔹 ANIMATIONS
         animator.SetBool("grounded", grounded);
-        animator.SetFloat("velocityX", Mathf.Abs(velocity.x) / maxSpeed);
         animator.SetFloat("velocityY", velocity.y / maxSpeed);
+
+        if (inChaseMode)
+        {
+            animator.SetFloat("velocityX", 1f); // FORCE RUN
+        }
+        else
+        {
+            animator.SetFloat("velocityX", Mathf.Abs(velocity.x) /  maxSpeed);
+        }
 
         // 🔹 APPLY MOVEMENT
         targetVelocity = move * maxSpeed;
