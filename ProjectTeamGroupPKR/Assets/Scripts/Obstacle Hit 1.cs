@@ -2,15 +2,12 @@ using UnityEngine;
 
 public class ObstacleHit1 : MonoBehaviour
 {
-    
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
             FindObjectOfType<ChaseManager1>().PlayerHit();
-
             Destroy(gameObject);
         }
     }
-
 }

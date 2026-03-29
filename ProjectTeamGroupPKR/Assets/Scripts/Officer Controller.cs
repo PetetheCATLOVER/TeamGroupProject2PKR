@@ -7,6 +7,8 @@ public class OfficerController : MonoBehaviour
     public float chaseSpeed = 6f;
     public bool chaseStarted = false;
 
+    public float catchDistance = 1.5f;
+
 
     [Header("Animation")]
     private Animator animator;
@@ -44,6 +46,13 @@ public class OfficerController : MonoBehaviour
         {
             Shoot();
             fireTimer = 0f;
+        }
+
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        if (distanceToPlayer <= catchDistance)
+        {
+            FindObjectOfType<ChaseManager1>().OfficerCatch();
         }
     }
 

@@ -1,22 +1,27 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class ObstacleSpawner1 : MonoBehaviour
 {
-    
     public GameObject[] obstacles;
-
     public float spawnTime = 2f;
     public Transform spawnPoint;
 
-    void Start()
+    private bool spawning = false;
+
+    public void StartSpawning()
     {
-        InvokeRepeating("SpawnObstacle", 2f, spawnTime);
+        if (spawning) return;
+
+        spawning = true;
+        InvokeRepeating("SpawnObstacle", 1f, spawnTime);
     }
 
     void SpawnObstacle()
     {
         int rand = Random.Range(0, obstacles.Length);
 
-        Instantiate(obstacles[rand], spawnPoint.position, Quaternion.identity);
+        GameObject obj = Instantiate(obstacles[rand], spawnPoint.position, Quaternion.identity);
+
+        // 🔥 GIVE IT MOVEMENT
     }
 }
