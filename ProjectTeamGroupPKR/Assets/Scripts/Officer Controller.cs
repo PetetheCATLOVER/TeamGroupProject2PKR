@@ -1,56 +1,42 @@
 ﻿using UnityEngine;
 
-
 public class OfficerController : MonoBehaviour
 {
     public Transform player;
-    public float chaseSpeed = 6f;
-    public bool chaseStarted = false;
-
     public float catchDistance = 1.5f;
 
-
-    [Header("Animation")]
     private Animator animator;
 
-
-    [Header("Shooting")]
     public GameObject bulletPrefab;
     public Transform gunPoint;
     public float fireRate = 2f;
 
-
     private float fireTimer = 0f;
-
+    private bool chaseStarted = false;
 
     void Awake()
     {
         animator = GetComponentInChildren<Animator>();
     }
 
-
     void Update()
     {
         if (!chaseStarted) return;
 
-        // ❌ REMOVE movement completely
-
-        // ✅ FORCE RUN ANIMATION
+        // Run animation
         animator.SetFloat("velocityX", 1f);
         animator.SetBool("grounded", true);
 
-        // 🔫 SHOOT TIMER
+        // Shoot
         fireTimer += Time.deltaTime;
-
         if (fireTimer >= fireRate)
         {
             Shoot();
             fireTimer = 0f;
         }
 
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-        if (distanceToPlayer <= catchDistance)
+        // Catch check
+        if (Vector2.Distance(transform.position, player.position) <= catchDistance)
         {
             FindObjectOfType<ChaseManager1>().OfficerCatch();
         }
@@ -59,13 +45,13 @@ public class OfficerController : MonoBehaviour
     public void StartChase()
     {
         chaseStarted = true;
-
-        Debug.Log("OFFICER STARTED");
+        gameObject.SetActive(true); // 🔥 ensures visibility
     }
-
 
     void Shoot()
     {
+        if (bulletPrefab == null || gunPoint == null) return;
+
         Instantiate(bulletPrefab, gunPoint.position, Quaternion.identity);
     }
 }

@@ -37,7 +37,6 @@ public class BackgroundScroller : MonoBehaviour
         );
     }
 
-    // 🔥 CALLED FROM TRIGGER
     public void StartScrolling()
     {
         isMoving = true;

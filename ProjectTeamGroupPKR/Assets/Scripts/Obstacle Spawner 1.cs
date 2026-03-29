@@ -6,22 +6,29 @@ public class ObstacleSpawner1 : MonoBehaviour
     public float spawnTime = 2f;
     public Transform spawnPoint;
 
-    private bool spawning = false;
+    public bool canSpawn = false;
 
-    public void StartSpawning()
+    void Start()
     {
-        if (spawning) return;
-
-        spawning = true;
-        InvokeRepeating("SpawnObstacle", 1f, spawnTime);
+        InvokeRepeating(nameof(SpawnObstacle), 2f, spawnTime);
     }
 
     void SpawnObstacle()
     {
+        if (!canSpawn || spawnPoint == null || obstacles.Length == 0) return;
+
         int rand = Random.Range(0, obstacles.Length);
 
         GameObject obj = Instantiate(obstacles[rand], spawnPoint.position, Quaternion.identity);
 
-        // 🔥 GIVE IT MOVEMENT
+        if (obj.GetComponent<ObstacleMover>() == null)
+        {
+            obj.AddComponent<ObstacleMover>();
+        }
+    }
+
+    public void StartSpawning()
+    {
+        canSpawn = true;
     }
 }

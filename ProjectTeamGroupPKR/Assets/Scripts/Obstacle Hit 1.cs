@@ -6,8 +6,15 @@ public class ObstacleHit1 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            FindObjectOfType<ChaseManager1>().PlayerHit();
+            ChaseManager1 manager = FindObjectOfType<ChaseManager1>();
+
+            if (manager != null)
+            {
+                manager.PlayerHit();
+            }
+
             Destroy(gameObject);
         }
     }
 }
+

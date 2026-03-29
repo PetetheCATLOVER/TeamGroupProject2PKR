@@ -2,6 +2,7 @@
 
 public class StartChaseTrigger : MonoBehaviour
 {
+    public ObstacleSpawner1 spawner;
     public PlayerController1 player;
     public OfficerController officer;
     public ChaseManager1 chaseManager;
@@ -14,12 +15,13 @@ public class StartChaseTrigger : MonoBehaviour
             player.StartChaseMode();
 
             officer.gameObject.SetActive(true);
-
             officer.StartChase();
-            chaseManager.StartChase();
-            backgroundScroller.StartScrolling(); // 🔥 THIS FIXES BACKGROUND
 
-            Debug.Log("CHASE STARTED");
+            chaseManager.StartChase();
+            backgroundScroller.StartScrolling();
+
+            if (spawner != null)
+                spawner.StartSpawning();
         }
     }
 }

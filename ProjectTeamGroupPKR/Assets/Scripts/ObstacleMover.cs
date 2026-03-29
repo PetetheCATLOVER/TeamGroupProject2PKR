@@ -6,12 +6,11 @@ public class ObstacleMover : MonoBehaviour
 
     void Update()
     {
-        // ?? MOVE LEFT (same illusion as bullets)
         transform.Translate(Vector2.left * speed * Time.deltaTime);
-    }
 
-    void OnBecameInvisible()
-    {
-        Destroy(gameObject); // cleanup when off screen
+        if (transform.position.x < -20f)
+        {
+            Destroy(gameObject);
+        }
     }
 }
