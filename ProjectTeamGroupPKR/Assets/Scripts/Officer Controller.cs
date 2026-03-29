@@ -3,9 +3,12 @@
 
 public class OfficerController : MonoBehaviour
 {
+    public Transform player;
+    public float chaseSpeed = 6f;
     public bool chaseStarted = false;
 
 
+    [Header("Animation")]
     private Animator animator;
 
 
@@ -20,7 +23,6 @@ public class OfficerController : MonoBehaviour
 
     void Awake()
     {
-        // 🔥 FIX: Get correct animator (NOT gun)
         animator = GetComponentInChildren<Animator>();
     }
 
@@ -29,14 +31,14 @@ public class OfficerController : MonoBehaviour
     {
         if (!chaseStarted) return;
 
+        // ❌ REMOVE movement completely
 
-        // ✅ FORCE RUN ANIMATION (same system as player)
+        // ✅ FORCE RUN ANIMATION
         animator.SetFloat("velocityX", 1f);
+        animator.SetBool("grounded", true);
 
-
-        // 🔫 SHOOTING
+        // 🔫 SHOOT TIMER
         fireTimer += Time.deltaTime;
-
 
         if (fireTimer >= fireRate)
         {
@@ -45,14 +47,11 @@ public class OfficerController : MonoBehaviour
         }
     }
 
-
     public void StartChase()
     {
         chaseStarted = true;
 
-
-        // 🔥 Start running immediately
-        animator.SetFloat("velocityX", 1f);
+        Debug.Log("OFFICER STARTED");
     }
 
 
