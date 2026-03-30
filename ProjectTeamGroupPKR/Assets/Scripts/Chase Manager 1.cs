@@ -13,8 +13,11 @@ public class ChaseManager1 : MonoBehaviour
     public Transform officer;
     public float moveCloserAmount = 2f;
 
-    private bool canBeCaught = false;
-    private bool chaseActive = false;
+    public bool canBeCaught = false;
+    public bool chaseActive = false;
+
+    public PlayerController1 playerController;
+    public OfficerController officerController;
 
     void Update()
     {
@@ -68,18 +71,30 @@ public class ChaseManager1 : MonoBehaviour
     public void OfficerCatch()
     {
         if (!canBeCaught) return;
+
         LoseGame();
     }
 
     void WinGame()
     {
         Debug.Log("ESCAPED! YOU WIN!");
+        StopAllAudio();
         Time.timeScale = 0;
     }
 
     void LoseGame()
     {
         Debug.Log("CAUGHT! GAME OVER!");
+        StopAllAudio();
         Time.timeScale = 0;
+    }
+
+    void StopAllAudio()
+    {
+        if (playerController != null)
+            playerController.StopAllAudio();
+
+        if (officerController != null)
+            officerController.StopAllAudio();
     }
 }

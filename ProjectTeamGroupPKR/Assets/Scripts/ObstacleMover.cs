@@ -6,9 +6,9 @@ public class ObstacleMover : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector2.left * speed * Time.deltaTime);
+        transform.Translate(Vector2.right * speed * Time.deltaTime);
 
-        if (transform.position.x < -20f)
+        if (transform.position.x > 20f)
         {
             Destroy(gameObject);
         }

@@ -125,16 +125,16 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: Sprite-OfficerStanding
     originalName: 
-    pivot: {x: 0.97222227, y: -0.017857144}
-    alignment: 9
+    pivot: {x: 0.5, y: 0}
+    alignment: 7
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
     rect:
       serializedVersion: 2
-      x: 4
-      y: 4
-      width: 36
-      height: 56
+      x: 0
+      y: 0
+      width: 16
+      height: 32
     spriteID: 555ec31de423b584f879f8f899c9861a
     spriteBone: []
     spriteOutline: []
