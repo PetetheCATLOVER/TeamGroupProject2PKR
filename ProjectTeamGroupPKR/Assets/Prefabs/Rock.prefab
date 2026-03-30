@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 7514047955087748289}
   - component: {fileID: 50337622152124369}
   m_Layer: 0
-  m_Name: PF Village Props - Crate Large
+  m_Name: Rock
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
