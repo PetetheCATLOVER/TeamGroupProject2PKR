@@ -3,10 +3,10 @@
 public class OfficerController : MonoBehaviour
 {
     public Transform player;
+    public float catchDistance = 1.5f;
     public bool chaseStarted = false;
 
-    public float catchDistance = 1.5f;
-
+    [Header("Animation")]
     private Animator animator;
 
     [Header("Shooting")]
@@ -16,28 +16,23 @@ public class OfficerController : MonoBehaviour
 
     private float fireTimer = 0f;
 
-    [Header("Audio")]
-    public AudioSource audioSource;
-    public AudioClip runSound;
-    public AudioClip gunSound;
+    private bool gameEnded = false;
 
     void Awake()
     {
         animator = GetComponentInChildren<Animator>();
-        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
     {
+        if (gameEnded) return;
         if (!chaseStarted) return;
 
-        // RUN animation
+        // 🏃 FORCE RUN ANIMATION
         animator.SetFloat("velocityX", 1f);
         animator.SetBool("grounded", true);
 
-        PlayRunSound();
-
-        // SHOOT
+        // 🔫 SHOOT TIMER
         fireTimer += Time.deltaTime;
 
         if (fireTimer >= fireRate)
@@ -46,6 +41,7 @@ public class OfficerController : MonoBehaviour
             fireTimer = 0f;
         }
 
+        // 🚓 CHECK DISTANCE TO PLAYER
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
         if (distanceToPlayer <= catchDistance)
@@ -57,28 +53,25 @@ public class OfficerController : MonoBehaviour
     public void StartChase()
     {
         chaseStarted = true;
-        gameObject.SetActive(true);
+
+        Debug.Log("OFFICER STARTED");
     }
 
     void Shoot()
     {
         Instantiate(bulletPrefab, gunPoint.position, Quaternion.identity);
-
-        audioSource.PlayOneShot(gunSound);
     }
 
-    void PlayRunSound()
+    // 🔥 STOP ALL AUDIO (FIX LOOP BUG)
+    public void StopAllOfficerAudio()
     {
-        if (!audioSource.isPlaying)
+        gameEnded = true;
+
+        AudioSource[] audios = GetComponentsInChildren<AudioSource>();
+
+        foreach (AudioSource a in audios)
         {
-            audioSource.clip = runSound;
-            audioSource.loop = true;
-            audioSource.Play();
+            a.Stop();
         }
-    }
-
-    public void StopAllAudio()
-    {
-        audioSource.Stop();
     }
 }

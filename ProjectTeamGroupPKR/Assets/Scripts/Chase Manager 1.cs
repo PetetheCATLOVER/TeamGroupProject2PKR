@@ -1,23 +1,36 @@
 ﻿using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class ChaseManager1 : MonoBehaviour
 {
+    [Header("Distance")]
     public float distance = 0f;
     public float speed = 12f;
     public float winDistance = 1000f;
 
+    [Header("Score")]
+    public int score = 0;
+    public TMP_Text scoreText;
+
+    [Header("UI")]
+    public GameObject winText;
+    public GameObject loseText;
+
+    [Header("Hit System")]
     public int hits = 0;
     public int maxHitsBeforeCatch = 3;
 
+    [Header("Officer")]
     public Transform officer;
     public float moveCloserAmount = 2f;
 
     public bool canBeCaught = false;
     public bool chaseActive = false;
 
-    public PlayerController1 playerController;
-    public OfficerController officerController;
+    [Header("References")]
+    public PlayerController1 player;
+    public OfficerController officerScript;
 
     void Update()
     {
@@ -51,6 +64,12 @@ public class ChaseManager1 : MonoBehaviour
         }
     }
 
+    public void AddScore(int amount)
+    {
+        score += amount;
+        scoreText.text = "Score: " + score;
+    }
+
     IEnumerator MoveOfficerCloser()
     {
         Vector3 start = officer.position;
@@ -77,24 +96,25 @@ public class ChaseManager1 : MonoBehaviour
 
     void WinGame()
     {
-        Debug.Log("ESCAPED! YOU WIN!");
-        StopAllAudio();
+        chaseActive = false;
+
+        winText.SetActive(true);
+
+        player.StopAllPlayerAudio();
+        officerScript.StopAllOfficerAudio();
+
         Time.timeScale = 0;
     }
 
     void LoseGame()
     {
-        Debug.Log("CAUGHT! GAME OVER!");
-        StopAllAudio();
+        chaseActive = false;
+
+        loseText.SetActive(true);
+
+        player.StopAllPlayerAudio();
+        officerScript.StopAllOfficerAudio();
+
         Time.timeScale = 0;
-    }
-
-    void StopAllAudio()
-    {
-        if (playerController != null)
-            playerController.StopAllAudio();
-
-        if (officerController != null)
-            officerController.StopAllAudio();
     }
 }
