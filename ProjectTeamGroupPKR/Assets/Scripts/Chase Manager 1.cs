@@ -26,35 +26,30 @@ public class ChaseManager1 : MonoBehaviour
 
     public bool canBeCaught = false;
     public bool chaseActive = false;
+    private bool isPaused = false;
 
     [Header("References")]
     public PlayerController1 player;
     public OfficerController officerScript;
 
-    private bool isPaused = false;
-
     void Update()
     {
-        // 🚫 Stop everything if not active or paused
         if (!chaseActive || isPaused) return;
 
-        // 📏 Increase distance
         distance += speed * Time.deltaTime;
 
-        // 🖥️ Update UI
         if (distanceText != null)
         {
             distanceText.text = "Distance: " + Mathf.FloorToInt(distance) + "m";
         }
 
-        // 🏁 Win condition
         if (distance >= winDistance)
         {
             WinGame();
         }
     }
 
-    // ▶️ START CHASE
+    // 🚨 START CHASE
     public void StartChase()
     {
         chaseActive = true;
@@ -63,7 +58,7 @@ public class ChaseManager1 : MonoBehaviour
         canBeCaught = false;
     }
 
-    // 💥 PLAYER HIT
+    // 💥 HIT SYSTEM
     public void PlayerHit()
     {
         hits++;
@@ -79,45 +74,39 @@ public class ChaseManager1 : MonoBehaviour
         }
     }
 
-    // 🚓 OFFICER MOVES CLOSER
     IEnumerator MoveOfficerCloser()
     {
         Vector3 start = officer.position;
         Vector3 target = start - new Vector3(moveCloserAmount, 0, 0);
 
-        float time = 0;
+        float t = 0;
 
-        while (time < 0.3f)
+        while (t < 0.3f)
         {
-            officer.position = Vector3.Lerp(start, target, time / 0.3f);
-            time += Time.deltaTime;
+            officer.position = Vector3.Lerp(start, target, t / 0.3f);
+            t += Time.deltaTime;
             yield return null;
         }
 
         officer.position = target;
     }
 
-    // 🚓 OFFICER CATCH
     public void OfficerCatch()
     {
         if (!canBeCaught) return;
-
         LoseGame();
     }
 
-    // 🏁 WIN
     void WinGame()
     {
         EndGame(winText);
     }
 
-    // ❌ LOSE
     void LoseGame()
     {
         EndGame(loseText);
     }
 
-    // 🛑 END GAME (USED BY BOTH)
     void EndGame(GameObject screen)
     {
         chaseActive = false;
@@ -125,32 +114,30 @@ public class ChaseManager1 : MonoBehaviour
         if (screen != null)
             screen.SetActive(true);
 
-        // 🔇 Stop audio
         if (player != null)
             player.StopAllPlayerAudio();
 
         if (officerScript != null)
             officerScript.StopAllOfficerAudio();
 
-        // ⏸️ Freeze game
         Time.timeScale = 0;
     }
 
-    // 🔄 RESTART GAME
+    // 🔄 RESTART
     public void RestartGame()
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // ❌ QUIT TO START (same scene reload)
+    // ❌ QUIT (back to start scene)
     public void QuitToStart()
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    // ⏸️ PAUSE GAME
+    // ⏸️ PAUSE
     public void PauseGame()
     {
         isPaused = true;
@@ -160,7 +147,7 @@ public class ChaseManager1 : MonoBehaviour
             pauseMenu.SetActive(true);
     }
 
-    // ▶️ RESUME GAME
+    // ▶️ RESUME
     public void ResumeGame()
     {
         isPaused = false;

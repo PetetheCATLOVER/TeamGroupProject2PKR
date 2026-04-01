@@ -7,12 +7,13 @@ public class OfficerController : MonoBehaviour
     public float catchDistance = 1.5f;
 
     [Header("Entrance Movement")]
-    public Vector3 startPosition = new Vector3(4f, -2f, 0f); // ✅ FIXED
-    public Vector3 targetPosition = new Vector3(1f, -2f, 0f); // ✅ FIXED
+    public Vector3 startPosition = new Vector3(4f, -2f, 0f);
+    public Vector3 targetPosition = new Vector3(1f, -2f, 0f);
     public float walkInSpeed = 3f;
 
     private bool isWalkingIn = false;
     private bool chaseStarted = false;
+    private bool gameEnded = false;
 
     [Header("Animation")]
     private Animator animator;
@@ -21,14 +22,11 @@ public class OfficerController : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform gunPoint;
     public float fireRate = 2f;
-
-    private float fireTimer = 0f;
+    private float fireTimer;
 
     [Header("Audio")]
-    public AudioSource gunAudio;     // 🔊 NEW
-    public AudioClip gunShotSound;   // 🔊 NEW
-
-    private bool gameEnded = false;
+    public AudioSource sirenAudio;     // 🚨 looping siren
+    public AudioSource gunshotAudio;   // 🔫 single shot sound
 
     void Awake()
     {
@@ -39,7 +37,6 @@ public class OfficerController : MonoBehaviour
     {
         if (gameEnded) return;
 
-        // 🚶 WALK INTO SCENE FIRST
         if (isWalkingIn)
         {
             WalkIntoScene();
@@ -48,11 +45,6 @@ public class OfficerController : MonoBehaviour
 
         if (!chaseStarted) return;
 
-        // 🏃 RUN ANIMATION
-        animator.SetFloat("velocityX", 1f);
-        animator.SetBool("grounded", true);
-
-        // 🔫 SHOOT TIMER
         fireTimer += Time.deltaTime;
 
         if (fireTimer >= fireRate)
@@ -61,10 +53,9 @@ public class OfficerController : MonoBehaviour
             fireTimer = 0f;
         }
 
-        // 🚓 CHECK DISTANCE
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        float distance = Vector2.Distance(transform.position, player.position);
 
-        if (distanceToPlayer <= catchDistance)
+        if (distance <= catchDistance)
         {
             FindObjectOfType<ChaseManager1>().OfficerCatch();
         }
@@ -84,7 +75,7 @@ public class OfficerController : MonoBehaviour
         if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
         {
             isWalkingIn = false;
-            StartActualChase();
+            StartChase();
         }
     }
 
@@ -95,22 +86,27 @@ public class OfficerController : MonoBehaviour
 
         isWalkingIn = true;
         chaseStarted = false;
+
+        // 🚨 START SIREN WHEN OFFICER APPEARS
+        if (sirenAudio != null && !sirenAudio.isPlaying)
+        {
+            sirenAudio.Play();
+        }
     }
 
-    void StartActualChase()
+    void StartChase()
     {
         chaseStarted = true;
-        Debug.Log("OFFICER CHASE STARTED AFTER WALK-IN");
     }
 
     void Shoot()
     {
         Instantiate(bulletPrefab, gunPoint.position, Quaternion.identity);
 
-        // 🔊 PLAY GUN SOUND (FIX)
-        if (gunAudio != null && gunShotSound != null)
+        // 🔫 PLAY GUNSHOT SOUND EVERY SHOT
+        if (gunshotAudio != null)
         {
-            gunAudio.PlayOneShot(gunShotSound);
+            gunshotAudio.Play();
         }
     }
 
@@ -118,12 +114,10 @@ public class OfficerController : MonoBehaviour
     {
         gameEnded = true;
 
-        AudioSource[] audios = GetComponentsInChildren<AudioSource>();
+        if (sirenAudio != null)
+            sirenAudio.Stop();
 
-        foreach (AudioSource a in audios)
-        {
-            a.Stop();
-        }
+        if (gunshotAudio != null)
+            gunshotAudio.Stop();
     }
 }
-

@@ -15,13 +15,6 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector2.left * speed * Time.deltaTime);
-
-        // ✅ SCORE ONLY IF DODGED
-        if (!passedPlayer && transform.position.x < 0f)
-        {
-            FindObjectOfType<ChaseManager1>().AddScore(10);
-            passedPlayer = true;
-        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

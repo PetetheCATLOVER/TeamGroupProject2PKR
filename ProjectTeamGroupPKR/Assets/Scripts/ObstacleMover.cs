@@ -4,19 +4,11 @@ public class ObstacleMover : MonoBehaviour
 {
     public float speed = 12f;
 
-    private bool passedPlayer = false;
-
     void Update()
     {
         transform.Translate(Vector2.right * speed * Time.deltaTime);
 
-        // ✅ SCORE ONLY IF PASSED PLAYER SAFELY
-        if (!passedPlayer && transform.position.x < 0f)
-        {
-            FindObjectOfType<ChaseManager1>().AddScore(5);
-            passedPlayer = true;
-        }
-
+        // destroy when off-screen
         if (transform.position.x < -20f)
         {
             Destroy(gameObject);
@@ -27,7 +19,7 @@ public class ObstacleMover : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            passedPlayer = true; // ❌ prevents scoring
+            FindObjectOfType<ChaseManager1>().PlayerHit();
         }
     }
 }
