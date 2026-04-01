@@ -1,10 +1,18 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class OfficerController : MonoBehaviour
 {
     public Transform player;
     public float catchDistance = 1.5f;
-    public bool chaseStarted = false;
+
+    [Header("Entrance Movement")]
+    public Vector3 startPosition = new Vector3(4f, -2f, 0f); // ✅ FIXED
+    public Vector3 targetPosition = new Vector3(1f, -2f, 0f); // ✅ FIXED
+    public float walkInSpeed = 3f;
+
+    private bool isWalkingIn = false;
+    private bool chaseStarted = false;
 
     [Header("Animation")]
     private Animator animator;
@@ -16,6 +24,10 @@ public class OfficerController : MonoBehaviour
 
     private float fireTimer = 0f;
 
+    [Header("Audio")]
+    public AudioSource gunAudio;     // 🔊 NEW
+    public AudioClip gunShotSound;   // 🔊 NEW
+
     private bool gameEnded = false;
 
     void Awake()
@@ -26,9 +38,17 @@ public class OfficerController : MonoBehaviour
     void Update()
     {
         if (gameEnded) return;
+
+        // 🚶 WALK INTO SCENE FIRST
+        if (isWalkingIn)
+        {
+            WalkIntoScene();
+            return;
+        }
+
         if (!chaseStarted) return;
 
-        // 🏃 FORCE RUN ANIMATION
+        // 🏃 RUN ANIMATION
         animator.SetFloat("velocityX", 1f);
         animator.SetBool("grounded", true);
 
@@ -41,7 +61,7 @@ public class OfficerController : MonoBehaviour
             fireTimer = 0f;
         }
 
-        // 🚓 CHECK DISTANCE TO PLAYER
+        // 🚓 CHECK DISTANCE
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
         if (distanceToPlayer <= catchDistance)
@@ -50,19 +70,50 @@ public class OfficerController : MonoBehaviour
         }
     }
 
-    public void StartChase()
+    void WalkIntoScene()
+    {
+        transform.position = Vector3.MoveTowards(
+            transform.position,
+            targetPosition,
+            walkInSpeed * Time.deltaTime
+        );
+
+        animator.SetFloat("velocityX", 1f);
+        animator.SetBool("grounded", true);
+
+        if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
+        {
+            isWalkingIn = false;
+            StartActualChase();
+        }
+    }
+
+    public void StartEntrance()
+    {
+        transform.position = startPosition;
+        gameObject.SetActive(true);
+
+        isWalkingIn = true;
+        chaseStarted = false;
+    }
+
+    void StartActualChase()
     {
         chaseStarted = true;
-
-        Debug.Log("OFFICER STARTED");
+        Debug.Log("OFFICER CHASE STARTED AFTER WALK-IN");
     }
 
     void Shoot()
     {
         Instantiate(bulletPrefab, gunPoint.position, Quaternion.identity);
+
+        // 🔊 PLAY GUN SOUND (FIX)
+        if (gunAudio != null && gunShotSound != null)
+        {
+            gunAudio.PlayOneShot(gunShotSound);
+        }
     }
 
-    // 🔥 STOP ALL AUDIO (FIX LOOP BUG)
     public void StopAllOfficerAudio()
     {
         gameEnded = true;
@@ -75,3 +126,4 @@ public class OfficerController : MonoBehaviour
         }
     }
 }
+

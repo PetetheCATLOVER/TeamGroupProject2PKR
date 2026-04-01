@@ -14,9 +14,10 @@ public class StartChaseTrigger : MonoBehaviour
         {
             player.StartChaseMode();
 
-            officer.gameObject.SetActive(true);
-            officer.StartChase();
+            // 🚶 OFFICER WALKS IN INSTEAD OF SPAWNING
+            officer.StartEntrance();
 
+            // 🎮 START GAME SYSTEMS (BUT OFFICER SHOOTS LATER)
             chaseManager.StartChase();
             backgroundScroller.StartScrolling();
 
@@ -25,3 +26,4 @@ public class StartChaseTrigger : MonoBehaviour
         }
     }
 }
+
